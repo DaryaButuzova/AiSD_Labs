@@ -1,0 +1,146 @@
+# С клавиатуры вводится два числа K и N. Квадратная матрица А(N,N), состоящая из 4-х равных по размерам подматриц, B,C,D,E
+# заполняется случайным образом целыми числами в интервале [-10,10].
+# Для тестирования использовать не случайное заполнение, а целенаправленное.
+#  Е	 В                  1
+#                       4       2
+#  D	 С                  3
+# Формируется матрица F следующим образом: если А симметрична относительно побочной диагонали,
+# то поменять в D симметрично области 2 и 4 местами, иначе D и Е поменять местами несимметрично.
+# При этом матрица А не меняется. После чего вычисляется выражение: A*AT–К*(AT+F). Выводятся по мере формирования
+# А, F и все матричные операции последовательно.
+import random
+
+
+def print_matrix(matrix):                  # функция вывода матрицы
+    matrix1 = list(map(list, zip(*matrix)))
+    for i in range(len(matrix1)):
+        k = len(max(list(map(str, matrix1[i])), key=len))
+        matrix1[i] = [f'{elem:{k}d}' for elem in matrix1[i]]
+    matrix1 = list(map(list, zip(*matrix1)))
+    for row in matrix1:
+        print(*row)
+    print()
+
+
+try:
+    print("Введите число K, являющееся коэффициентом при умножении: ")
+    k = int(input())
+    print("Введите число число N, большее или равное 5, являющееся порядком квадратной матрицы: ")
+    n = int(input())
+    print()
+    while n < 5:        # ошибка в случае введения слишком малого порядка матрицы
+        n = int(input(
+            "Вы ввели число, неподходящее по условию, введите число N, большее или равное 5:\n"))
+
+    print("Матрица А изначальная:")
+
+    # создаем матрицу размером nxn, заполненную случайными числами
+    mat_A = [[random.randint(-10, 10) for i in range(n)] for j in range(n)]
+
+    # задание матрицы для тестирования(симметричная матрица по побочной диагонали)
+    # mat_A = [[6, 8, 7, 6, 5, 1], [5, 7, 5, 4, 1, 5], [
+    #   4, 6, 3, 1, 4, 6], [3, 3, 1, 3, 5, 7], [2, 1, 3, 6, 7, 8], [1, 2, 3, 4, 5, 6]]
+
+    print_matrix(mat_A)          # вывод матрицы A
+    half = n//2
+    fix_n = half
+    if n % 2 != 0:
+        fix_n += 1
+
+    # резервная копия матрицы A для дальнейших операций
+    mat_A_res = [[elem for elem in raw] for raw in mat_A]
+    # заготовка под транспонированную матрицу A
+    mat_A_trans = [[0 for i in range(n)] for j in range(n)]
+
+    print("Матрица A транспонированная:")
+
+    for i in range(n):              # произведение транспонирования матрицы A
+        for j in range(n):
+            mat_A_trans[i][j] = mat_A_res[j][i]
+
+    print_matrix(mat_A_trans)        # вывод транспонированной матрицы A
+
+    print("Матрица F изначально равная матрице A:")
+
+    # создание матрицы F, на данный момент равной матрице A
+    mat_F = [[elem for elem in raw] for raw in mat_A]
+
+    print_matrix(mat_F)          # вывод матрицы F
+
+    # резервная копия матрицы F для дальнейших операций
+    mat_F_res = [[elem for elem in raw] for raw in mat_F]
+    # заготовка под отдельную подматрицу D матрицы F
+    mat_F_D = [[0 for i in range(fix_n)] for j in range(fix_n)]
+    for i in range(fix_n):
+        for j in range(fix_n):
+            mat_F_D[i][j] = mat_F[i+3][j]
+    print('вывод элемента D матрицы F\n')
+    print_matrix(mat_F_D)      # вывод элемента D матрицы F
+    # заготовка под отдельную подматрицу E матрицы F
+    mat_F_E = [[0 for i in range(fix_n)] for j in range(fix_n)]
+    for i in range(fix_n):
+        for j in range(fix_n):
+            mat_F_E[i][j] = mat_F[i][j]
+    print('вывод элемента E матрицы F\n')
+    print_matrix(mat_F_E)       # вывод элемента E матрицы F
+    # cравниваем матрицу А на симметричность относительно побочной диагонали
+    FlagSymm = False
+    for i in range(n):
+        for j in range(n):
+            if mat_A[i][j] != mat_A[n-j-1][n-i-1]:
+                FlagSymm = False
+            else:
+                FlagSymm = True
+    # print(FlagSymm)
+    if FlagSymm == False:
+        print('Матрица А несимметрична -> меняем в матрице F подматрицы Е и D местами несимметрично')
+        for i in range(fix_n):
+            for j in range(fix_n):
+                mat_F[i][j] = mat_F_res[half + i][j]
+                mat_F[half + i][j] = mat_F_res[i][j]
+
+    else:
+        print('Матрица А симметрична относительно побочной диагонали -> меняем в матрице F в подматрице D симметрично области 2 и 4 местами')
+        i = fix_n
+        j = 1
+        for j in range(fix_n):
+            for i in range(n):
+                if (i >= fix_n):
+                    mat_F[i][0] = mat_F_res[i][fix_n-1]
+                    mat_F[i][fix_n-1] = mat_F_res[i][0]
+    print_matrix(mat_F)  # Матрица F после сравнения матрицы А
+    # заготовка под результат умножения матрицы A на транспонированную матрицу A
+    mat_A_mult = [[0 for i in range(n)] for j in range(n)]
+    print("А * транспорнированную A = матрице:")
+    for i in range(n):              # умножаем 2 матрицы друг на друга
+        for j in range(n):
+            for a in range(n):
+                mat_A_mult[i][j] += mat_A[i][a] * \
+                    mat_A_trans[a][j]
+    print_matrix(mat_A_mult)  # результат умножения A * A^t
+
+    # заготовка под результат сложения трансп.A и матрицы F
+    mat_F_folded = [[0 for i in range(n)] for j in range(n)]
+    print('AT + F = матрице:')
+    for i in range(n):  # производим сложение AT + F
+        for j in range(n):
+            mat_F_folded[i][j] = mat_A_trans[i][j]+mat_F[i][j]
+    print_matrix(mat_F_folded)
+
+    # заготовка под результат умножения: К * (трансп.A + матрицы F)
+    mat_F_mult = [[0 for i in range(n)] for j in range(n)]
+    print("K * (AT + F) =  матрице")
+    for i in range(n):  # производим умножение K * (AT + F)
+        for j in range(n):
+            mat_F_mult[i][j] = k * mat_F_folded[i][j]
+    print_matrix(mat_F_mult)
+
+    # заготовка под итоговую разность матриц
+    mat_result = [[0 for i in range(n)] for j in range(n)]
+    print('Итоговая матрица = (A * AT) - K * (AT + F)')
+    for i in range(n):  # производим вычитание (A * AT) и  K * (AT + F)
+        for j in range(n):
+            mat_result[i][j] = mat_A_mult[i][j] - mat_F_mult[i][j]
+    print_matrix(mat_result)
+except ValueError:
+    print("\nВведенный символ не является числом. Перезапустите программу и введите число.")
