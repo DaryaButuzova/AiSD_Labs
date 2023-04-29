@@ -1,0 +1,38 @@
+# Натуральные числа. Выводит на экран число и его прямой, обратный и дополнительный коды (бинарные).
+import re
+pattern = r"(-?\b[0-9][0-9]*\b)"
+result = re.findall(pattern, open('text.txt').read())
+print(result)
+for i in range(len(result)):  # Проходим по всем словам в списке
+    n = int(result[i])
+    print(n)
+    if n > 0:
+        r = bin(n)[2:]
+        print("Прямой код для положительного числа ",
+              result[i], " --->", r)
+    elif n == 0:
+        print("Представление положительного числа для числа 0 ---> 00000000 ")
+    elif n < 0:
+        r1 = bin(~(-n))[4:]
+        res = '1' * (7-len(r1)) + '0' + r1
+        print("Обратный код для отрицательного числа ",
+              result[i], " --->", res)
+        num1 = [*map(int, res)]
+        num2 = [*map(int, ("00000001"))]
+        # Переворачиваем числа для удобства выполнения операций
+        num1 = num1[::-1]
+        num2 = num2[::-1]
+        size = max(len(num1), len(num2))  # Дополняем числа нулями
+        num1 += [0] * (size - len(num1))
+        num2 += [0] * (size - len(num2))
+        overflow = 0  # Складываем 2 числа
+        res = []
+        for obj in zip(num1, num2):
+            value = obj[0] + obj[1] + overflow
+            overflow = value // 2
+            res.append(value % 2)
+        if overflow == 1:  # если флаг переполнения установлен
+            res.append(1)  # тогда добавляем бит в начало нового числа
+        res = res[::-1]  # Переворачиваем число назад
+        print("Дополнительный код для отрицательного числа",
+              result[i], "--->", ''.join(map(str, res)))
