@@ -1,0 +1,114 @@
+# Задана рекуррентная функция. Область определения функции – натуральные числа. Написать программу сравнительного вычисления
+# данной функции рекурсивно и итерационно. Определить (смоделировать) границы применимости рекурсивного и итерационного подхода.
+# Результаты сравнительного исследования времени вычисления представить в табличной и графической форме в виде отчета по лабораторной работе
+
+# F(1) = 1;      F(n) = 3*F(n–1) – 2*G(n–1)
+# G(1) = 1;     G(n) = F(n–1) + 2*G(n–1), при n >=2
+
+import time
+import matplotlib.pyplot as plt
+
+
+def recursive_f(n):
+    if n < 2:
+        return 1
+    else:
+        return 3*recursive_f(n-1) - 2 * recursive_G(n-1)
+
+
+def recursive_G(n):
+    if n < 2:
+        return 1
+    else:
+        return recursive_f(n-1) + 2 * recursive_G(n-1)
+
+
+def iterative_f(n):
+    a = 1
+    b = 1
+    c = 0
+    d = 0
+
+    for i in range(2, n+1):
+        c = 3 * a - 2 * b
+        d = a + 2 * b
+        a = c
+        b = d
+
+    return c
+
+
+try:
+    print("Введите натуральное число n, являющееся входным для функции F(x<2) = 1; F(n) = 2F(n-1) + F(n-3),\nи на основе которого будет строиться сравнительная таблица: ")
+    n = int(input())
+    while n < 1:  # ошибка в случае введения не натурального числа
+        n = int(input("\nВы ввели не натуральное число, функция определенна лишь в области натуральных чисел. Введите натуральное число:\n"))
+
+    if n > 100000:
+        print("\nРабота программы может занять существенное время, ожидайте...")
+
+    start = time.time()         # счетчик времени и результат работы итерационного подхода
+    result = iterative_f(n)
+    end = time.time()
+    print("\nРезультат работы итерационного подхода:",
+          result, "\nВремя работы:", end - start)
+
+    start = time.time()         # счетчик времени и результат работы рекурсивного подхода
+    result = recursive_f(n)
+    end = time.time()
+    print("\nРезультат работы рекурсивного подхода:",
+          result, "\nВремя работы:", end - start)
+
+    print("\nПрограмма формирует сравнительную таблицу и графики времени вычисления рекурсивным и итерационным подходом для n чисел, ожидайте...\n")
+
+    # создание списков для дальнейшего построения таблицы
+    recursive_times = []
+    recursive_values = []
+    iterative_times = []
+    iterative_values = []
+    n_values = list(range(1, n + 1, +1))
+
+    for n in n_values:                  # заполнение списков данными
+        start = time.time()
+        recursive_values.append(recursive_f(n))
+        end = time.time()
+        recursive_times.append(end - start)
+
+        start = time.time()
+        iterative_values.append(iterative_f(n))
+        end = time.time()
+        iterative_times.append(end - start)
+
+    table = []
+    for i, n in enumerate(n_values):
+        table.append([n, recursive_times[i], iterative_times[i],
+                      recursive_values[i], iterative_values[i]])
+    print('{:<10}|{:<22}|{:<22}|{:<25}|{:<30}'.format('n', 'Время рекурсии (с)',
+                                                      'Время итерации (с)', 'Значение рекурсии', 'Значение итерации'))        # вывод таблицы
+    print('-' * 125)
+    for j in table:
+        print('{:<10}|{:<22}|{:<22}|{:<25}|{:<30}'.format(
+            j[0], j[1], j[2], j[3], j[4]))
+
+    # вывод графиков
+    plt.plot(n_values, recursive_times, label='Рекурсия')
+    plt.plot(n_values, iterative_times, label='Итерация')
+    plt.xlabel('n')
+    plt.ylabel('Время (с)')
+    plt.title('Сравнение рекурсивного и итерационного подхода')
+    plt.legend()
+    plt.show()
+    print("\nРабота программы завершена.\n")
+
+    plt.plot(n_values, iterative_times, label='Итерация')
+    plt.xlabel('n')
+    plt.ylabel('Время (с)')
+    plt.title('Итерация')
+    plt.legend()
+    plt.show()
+
+except ValueError:
+    print("\nВы ввели число, не следуя условиям. Перезапустите программу и введите число, следуя инструкциям.")
+
+except RecursionError:
+    print("\nВы превысили относительную максимальную глубину рекурсии. Перезапустите программу и введите меньшее число, если хотите получать результат работы рекурсивного подхода и сравнительную таблицу.")
