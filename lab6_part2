@@ -1,0 +1,63 @@
+from itertools import combinations
+
+
+class Candidate:
+    def __init__(self, name, age, experience_years, rating):
+        self.name = name
+        self.age = age
+        self.experience_years = experience_years
+        self.rating = rating
+
+    def __repr__(self):
+        return self.name
+
+
+def create_candidates():
+    candidates = [
+        Candidate("Anton", 30, 5, 7.5),
+        Candidate("Egor", 35, 10, 8.0),
+        Candidate("Marina", 28, 4, 8.5),
+        Candidate("Sasha", 32, 9, 7.0),
+        Candidate("Danil", 27, 3, 6.5),
+        Candidate("Darya", 38, 7, 4.0),
+        Candidate("Nastya", 20, 2, 5.5),
+        Candidate("Oleg", 26, 6, 9.0)
+    ]
+    return candidates
+
+
+def find_best_jury(candidates, K, min_age, min_experience_years, min_rating):
+    # Отбираем кандидатов, удовлетворяющих ограничениям
+    filtered_candidates = [c for c in candidates if
+                           c.age >= min_age and
+                           c.experience_years >= min_experience_years and
+                           c.rating >= min_rating]
+
+    # Рассчитываем целевую функцию - сумму рейтингов членов комиссии
+    best_rating_sum = 0
+    best_jury = None
+    for jury in combinations(filtered_candidates, K):
+        rating_sum = sum([c.rating for c in jury])
+        if rating_sum > best_rating_sum:
+            best_rating_sum = rating_sum
+            best_jury = jury
+
+    return best_jury
+
+
+K = int(input("Введите количество членов жюри: "))
+N = int(input("Введите количество претендентов: "))
+min_age = int(input("Введите минимальный возраст для участия в жюри: "))
+min_experience_years = int(
+    input("Введите минимальное количество лет опыта работы для участия в жюри: "))
+min_rating = float(input("Введите минимальный рейтинг для участия в жюри: "))
+
+candidates = create_candidates()  # Создание списка претендентов
+
+best_jury = find_best_jury(
+    candidates, K, min_age, min_experience_years, min_rating)  # Поиск лучшего жюри
+
+# Вывод результата
+print(f"Лучшее жюри из {K} человек:\n")
+for member in best_jury:
+    print(f"{member.name} (возраст: {member.age}, стаж: {member.experience_years}, рейтинг: {member.rating})")
