@@ -1,0 +1,38 @@
+#Задание состоит из двух частей. 
+#1 часть – написать программу в соответствии со своим вариантом задания.
+#2 часть – усложнить написанную программу, введя по своему усмотрению в условие минимум одно ограничение на характеристики 
+#объектов и целевую функцию для оптимизации решения.
+#Вариант 6. Судейское жюри должно состоять из К членов. Имеется N претендентов. Вывести все возможные варианты жюри.
+def get_jury_combinations(jury_size, candidates):
+    # Если размер комиссии равен 1, то можно вернуть список из всех кандидатов.
+    if jury_size == 1:
+        return [[candidate] for candidate in candidates]
+
+    # Рекурсивно находим все комбинации комиссий меньшего размера.
+    smaller_jury_combinations = get_jury_combinations(
+        jury_size - 1, candidates)
+
+    # Объединяем каждую из найденных комбинаций с одним из оставшихся кандидатов.
+    jury_combinations = []
+    for i in range(len(smaller_jury_combinations)):
+        for j in range(i + 1, len(candidates)):
+            combination = smaller_jury_combinations[i] + [candidates[j]]
+            jury_combinations.append(combination)
+
+    # Возвращаем все найденные комбинации.
+    return jury_combinations
+
+
+K = int(input("Введите количество членов жюри: "))
+N = int(input("Введите количество претендентов: "))
+
+# Создание списка претендентов
+list_of_candidates = [str(i + 1) for i in range(N)]
+
+# Получение всех возможных комбинаций жюри
+jury_combinations = get_jury_combinations(K, list_of_candidates)
+
+# Вывод всех комбинаций жюри
+print(f"Все возможные комбинации жюри из {K} членов из {N} претендентов:\n")
+for combination in jury_combinations:
+    print(combination)
