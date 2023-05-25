@@ -25,13 +25,18 @@ def combinations(N, K):
     return result
 
 
-print('Введите количество жюри:')
-K = int(input())
-print('Введите количество претендентов:')
-N = int(input())
-results = combinations(N, K)
-count = 0
-for i, res in enumerate(results):
-    print(f"Вариант {i+1}: {res}")
-    count = i
-print('Количество вариантов - ', i+1)
+try:
+    print('Введите количество жюри:')
+    K = int(input())
+    print('Введите количество претендентов:')
+    N = int(input())
+
+    results = combinations(N, K)
+    count = 0
+    for i, res in enumerate(results):
+        print(f"Вариант {i+1}: {res}")
+        count = i
+    print('Количество вариантов - ', i+1)
+
+except ValueError:
+    print("\nВведенный символ не является числом. Перезапустите программу и введите число.")
