@@ -69,3 +69,15 @@ try:
 
 except ValueError:
     print("Введенный символ не является числом. Перезапустите программу и введите число.")
+
+
+
+
+
+
+
+
+# Вывод информации о кандидатах
+print("Информация о кандидатах:")
+for candidate in candidates:
+    print(f"Номер кандидата: {candidate.number_candidate}, Возраст: {candidate.age}, Опыт работы (в годах): {candidate.experience_years}")
