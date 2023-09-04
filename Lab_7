@@ -1,0 +1,78 @@
+# Усложнение:добавить ограничение на минимальное значение опыта работы претендентов, которые могут быть выбраны в жюри.
+# целевая функция:максимизировать сумму опыта работы жюри при условии, что мы удовлетворяем минимальным требованиям по
+# опыту работы претендентов.
+# Задание состоит из двух частей.
+# 1 часть – написать программу в соответствии со своим вариантом задания.
+# 2 часть – усложнить написанную программу, введя по своему усмотрению в условие минимум одно ограничение на характеристики
+# объектов и целевую функцию для оптимизации решения.
+# Вариант 6. Судейское жюри должно состоять из К членов. Имеется N претендентов. Вывести все возможные варианты жюри.
+from itertools import combinations
+import random
+from random import randint
+
+class Candidate:
+    def __init__(self, number_candidate, age, experience_years):
+        self.number_candidate = number_candidate
+        self.age = age
+        self.experience_years = experience_years
+        
+
+    def __repr__(self):
+        return self.number_candidate
+
+
+def create_candidates():
+    candidates = []
+    for i in range(N):
+        count = str(i+1)
+        candidates.append(Candidate(count, randint(18, 50), randint(1,7))),
+    return candidates
+
+
+
+def find_best_jury(candidates, K, min_age, min_experience_years):
+    filtered_candidates = [c for c in candidates if
+                           c.age >= min_age and
+                           c.experience_years >= min_experience_years]
+
+    if len(filtered_candidates) < K:
+        print("Недостаточно подходящих кандидатов для формирования жюри.")
+        return []
+
+    best_experience_years_sum = 0
+    best_jury = None
+    for jury in combinations(filtered_candidates, K):
+        experience_years_sum = sum([c.experience_years for c in jury])
+        if experience_years_sum > best_experience_years_sum:
+            best_experience_years_sum = experience_years_sum
+            best_jury = jury
+
+    return best_jury
+
+try:
+    K = int(input("Введите количество членов жюри: "))
+    N = int(input("Введите количество претендентов: "))
+    min_age = int(input("Введите минимальный возраст для участия в жюри: "))
+    min_experience_years = int(
+        input("Введите минимальное количество лет опыта работы для участия в жюри: \n"))
+
+
+    candidates = create_candidates()  # Создание списка претендентов
+    
+    print("Информация о кандидатах:\n") # Вывод информации о кандидатах
+    for candidate in candidates:
+        print(f"Номер кандидата: {candidate.number_candidate}, Возраст: {candidate.age}, Стаж: {candidate.experience_years} ")
+
+    best_jury = find_best_jury(
+        candidates, K, min_age, min_experience_years)  # Поиск лучшего жюри
+
+    # Вывод результата
+    if not best_jury:
+        print("Нет подходящего жюри по заданным условиям.")
+    else:
+        print(f"\nЛучшее жюри из {K} человек:\n")
+        for member in best_jury:
+            print(f"Номер кандидата: {member.number_candidate}, возраст: {member.age}, стаж: {member.experience_years}")
+
+except ValueError:
+    print("Введенный символ не является числом. Перезапустите программу и введите число.")
