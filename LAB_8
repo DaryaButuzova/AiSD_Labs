@@ -1,36 +1,31 @@
-# Усложнение:добавить ограничение на минимальное значение квалификации или опыта работы претендентов, которые могут быть выбраны в жюри.
-# целевая функция:аксимизировать сумму квалификации и опыта работы жюри при условии, что мы удовлетворяем минимальным требованиям по
-# квалификации и опыту работы претендентов.
+# Усложнение:добавить ограничение на минимальное значение опыта работы претендентов, которые могут быть выбраны в жюри.
+# целевая функция:максимизировать сумму опыта работы жюри при условии, что мы удовлетворяем минимальным требованиям по
+# опыту работы претендентов.
 # Задание состоит из двух частей.
 # 1 часть – написать программу в соответствии со своим вариантом задания.
 # 2 часть – усложнить написанную программу, введя по своему усмотрению в условие минимум одно ограничение на характеристики
 # объектов и целевую функцию для оптимизации решения.
 # Вариант 6. Судейское жюри должно состоять из К членов. Имеется N претендентов. Вывести все возможные варианты жюри.
-from itertools import combinations
-import random
-from random import randint
 from tkinter import *
 from tkinter import ttk
+from itertools import combinations
+import random
 
 class Candidate:
     def __init__(self, number_candidate, age, experience_years):
         self.number_candidate = number_candidate
         self.age = age
         self.experience_years = experience_years
-        
 
     def __repr__(self):
         return self.number_candidate
 
-
-def create_candidates():
+def create_candidates(N):
     candidates = []
     for i in range(N):
         count = str(i+1)
-        candidates.append(Candidate(count, randint(18, 50), randint(1,7))),
+        candidates.append(Candidate(count, random.randint(18, 50), random.randint(1, 7)))
     return candidates
-
-
 
 def find_best_jury(candidates, K, min_age, min_experience_years):
     filtered_candidates = [c for c in candidates if
@@ -38,7 +33,6 @@ def find_best_jury(candidates, K, min_age, min_experience_years):
                            c.experience_years >= min_experience_years]
 
     if len(filtered_candidates) < K:
-        
         return []
 
     best_experience_years_sum = 0
@@ -57,14 +51,13 @@ def display_results():
     min_age = int(entry_min_age.get())
     min_experience_years = int(entry_min_experience.get())
 
-    candidates = create_candidates(N)  # Создание списка претендентов
-    best_jury = find_best_jury(candidates, K, min_age, min_experience_years)  # Поиск лучшего жюри
+    candidates = create_candidates(N)
+    result_jury = find_best_jury(candidates, K, min_age, min_experience_years)
 
-    # Вывод результата
-    if not best_jury:
+    if not result_jury:
         result_label.config(text="Нет подходящего жюри по заданным условиям.")
     else:
-        result_text = "\n".join([f"Номер кандидата: {member.number_candidate}, возраст: {member.age}, стаж: {member.experience_years}" for member in best_jury])
+        result_text = "\n".join([f"Номер кандидата: {member.number_candidate}, возраст: {member.age}, стаж: {member.experience_years}" for member in result_jury])
         result_label.config(text=f"Лучшее жюри из {K} человек:\n{result_text}")
 
 # Создание графического интерфейса
@@ -74,10 +67,10 @@ root.title("Лабораторная работа №8")
 frame = Frame(root)
 frame.grid(row=0, column=0, padx=10, pady=10)
 
-Label(frame, text="Введите количество членов жюри: ").grid(row=0, column=0)
-Label(frame, text="Введите количество претендентов:").grid(row=1, column=0)
-Label(frame, text="Введите минимальный возраст для участия в жюри:").grid(row=2, column=0)
-Label(frame, text="Введите минимальное количество лет опыта работы для участия в жюри: ").grid(row=3, column=0)
+Label(frame, text="Количество членов жюри:").grid(row=0, column=0)
+Label(frame, text="Количество претендентов:").grid(row=1, column=0)
+Label(frame, text="Минимальный возраст:").grid(row=2, column=0)
+Label(frame, text="Минимальный опыт работы:").grid(row=3, column=0)
 
 entry_k = Entry(frame)
 entry_n = Entry(frame)
@@ -89,10 +82,10 @@ entry_n.grid(row=1, column=1)
 entry_min_age.grid(row=2, column=1)
 entry_min_experience.grid(row=3, column=1)
 
-result_button = Button(frame, text="Найти лучшее жюри", command=display_results)
+result_button = ttk.Button(frame, text="Найти лучшее жюри", command=display_results)
 result_button.grid(row=4, column=0, columnspan=2)
 
-result_label = Label(frame, text="")
+result_label = ttk.Label(frame, text="")
 result_label.grid(row=5, column=0, columnspan=2)
 
 root.mainloop()
