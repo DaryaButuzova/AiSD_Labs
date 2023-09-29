@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import showinfo, showerror
 
+
 def check_login():
     with open("Reg.txt", "r") as file:
         lines = file.readlines()
@@ -10,23 +11,52 @@ def check_login():
                 return True
     return False
 
+
+def check_users():
+    with open("Reg.txt", "r") as file:
+        lines = file.readlines()
+        login_input = login.get()
+        password_input = password.get()
+        for line in lines:
+            # Разбиваем строку на логин и пароль
+            parts = line.strip().split(':')
+            if len(parts) == 2:  # Проверяем, что есть и логин, и пароль
+                stored_login, stored_password = parts
+                if login_input == stored_login and password_input == stored_password:
+                    return True
+    return False
+
+
 def registration_user():
-    if check_login():
+    if not login.get() or not password.get():
+        showerror("Ошибка", "Поля 'Логин' и 'Пароль' должны быть заполнены.")
+    elif check_login():
         showerror("Ошибка", "Учетная запись с таким логином уже существует.")
     else:
         with open("Reg.txt", "a") as file:
             file.write(f"{login.get()}:{password.get()}\n")
-        showinfo("Успех", "Регистрация успешно завершена.")
+        showinfo("Успех", "Регистрация успешно завершена.\n Вы успешно вошли!")
+
+
+def enter_users():
+    if check_users():
+        showinfo("Успех!", "Вы вошли в свой аккаунт ")
+    else:
+        showerror("Ошибка", "Неверный логин или пароль.")
+
 
 # Создание графического интерфейса
 root = Tk()
+w, h = root.winfo_width(), root.winfo_height()
+root.geometry(
+    f"+{(root.winfo_screenwidth()-w)//2}+{(root.winfo_screenheight()-h)//2}")
 root.title("Регистрация")
 
 frame = Frame(root)
 frame.grid(row=0, column=0, padx=10, pady=10)
 
-Label(frame, text="Введите логин").grid(row=0, column=0)
-Label(frame, text="Введите пароль").grid(row=1, column=0)
+Label(frame, text="Логин: ").grid(row=0, column=0)
+Label(frame, text="Пароль: ").grid(row=1, column=0)
 
 login = Entry(frame)
 password = Entry(frame, show="*")
@@ -36,5 +66,7 @@ password.grid(row=1, column=1)
 
 register_button = Button(frame, text="Регистрация", command=registration_user)
 register_button.grid(row=2, columnspan=2)
+enter_button = Button(frame, text="Вход", command=enter_users)
+enter_button.grid(row=3, columnspan=3)
 
 root.mainloop()
