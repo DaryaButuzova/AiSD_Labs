@@ -1,30 +1,46 @@
 from tkinter import *
-from tkinter.messagebox import showinfo, showerror
+from tkinter.messagebox import showinfo, showerror, askyesno
+import os
+
+
+def check_file_exist():
+    if not os.path.isfile("Reg.txt"):
+        choice = askyesno(
+            "Ошибка!", " Отсутствует 'Reg.txt' файл. Хотите создать его?")
+        # return False
+        if choice:
+            with open("Reg.txt", "w"):
+                pass
+        else:
+            exit()
+    return True
 
 
 def check_login():
-    with open("Reg.txt", "r") as file:
-        lines = file.readlines()
-        login_input = login.get()
-        for line in lines:
-            if login_input in line:
-                return True
-    return False
+    if check_file_exist():
+        with open("Reg.txt", "r") as file:
+            lines = file.readlines()
+            login_input = login.get()
+            for line in lines:
+                if login_input in line:
+                    return True
+        return False
 
 
 def check_users():
-    with open("Reg.txt", "r") as file:
-        lines = file.readlines()
-        login_input = login.get()
-        password_input = password.get()
-        for line in lines:
-            # Разбиваем строку на логин и пароль
-            parts = line.strip().split(':')
-            if len(parts) == 2:  # Проверяем, что есть и логин, и пароль
-                stored_login, stored_password = parts
-                if login_input == stored_login and password_input == stored_password:
-                    return True
-    return False
+    if check_file_exist():
+        with open("Reg.txt", "r") as file:
+            lines = file.readlines()
+            login_input = login.get()
+            password_input = password.get()
+            for line in lines:
+                # Разбиваем строку на логин и пароль
+                parts = line.strip().split(':')
+                if len(parts) == 2:  # Проверяем, что есть и логин, и пароль
+                    stored_login, stored_password = parts
+                    if login_input == stored_login and password_input == stored_password:
+                        return True
+        return False
 
 
 def registration_user():
@@ -50,7 +66,7 @@ root = Tk()
 w, h = root.winfo_width(), root.winfo_height()
 root.geometry(
     f"+{(root.winfo_screenwidth()-w)//2}+{(root.winfo_screenheight()-h)//2}")
-root.title("Регистрация")
+root.title("Регистрация/Вход")
 
 frame = Frame(root)
 frame.grid(row=0, column=0, padx=10, pady=10)
