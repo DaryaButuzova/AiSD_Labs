@@ -7,7 +7,6 @@ def check_file_exist():
     if not os.path.isfile("Reg.txt"):
         choice = askyesno(
             "Ошибка!", " Отсутствует 'Reg.txt' файл. Хотите создать его?")
-        # return False
         if choice:
             with open("Reg.txt", "w"):
                 pass
