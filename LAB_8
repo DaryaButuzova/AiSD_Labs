@@ -1,15 +1,18 @@
-# Усложнение:добавить ограничение на минимальное значение опыта работы претендентов, которые могут быть выбраны в жюри.
-# целевая функция:максимизировать сумму опыта работы жюри при условии, что мы удовлетворяем минимальным требованиям по
-# опыту работы претендентов.
+# Усложнение:добавить ограничение на минимальное значение квалификации или опыта работы претендентов, которые могут быть выбраны в жюри.
+# целевая функция:аксимизировать сумму квалификации и опыта работы жюри при условии, что мы удовлетворяем минимальным требованиям по
+# квалификации и опыту работы претендентов.
 # Задание состоит из двух частей.
 # 1 часть – написать программу в соответствии со своим вариантом задания.
 # 2 часть – усложнить написанную программу, введя по своему усмотрению в условие минимум одно ограничение на характеристики
 # объектов и целевую функцию для оптимизации решения.
 # Вариант 6. Судейское жюри должно состоять из К членов. Имеется N претендентов. Вывести все возможные варианты жюри.
+
 from tkinter import *
 from tkinter import ttk
 from itertools import combinations
+from tkinter.messagebox import showinfo, showerror
 import random
+
 
 class Candidate:
     def __init__(self, number_candidate, age, experience_years):
@@ -20,12 +23,15 @@ class Candidate:
     def __repr__(self):
         return self.number_candidate
 
+
 def create_candidates(N):
     candidates = []
     for i in range(N):
         count = str(i+1)
-        candidates.append(Candidate(count, random.randint(18, 50), random.randint(1, 7)))
+        candidates.append(
+            Candidate(count, random.randint(18, 50), random.randint(1, 7)))
     return candidates
+
 
 def find_best_jury(candidates, K, min_age, min_experience_years):
     filtered_candidates = [c for c in candidates if
@@ -45,23 +51,36 @@ def find_best_jury(candidates, K, min_age, min_experience_years):
 
     return best_jury
 
+
 def display_results():
-    K = int(entry_k.get())
-    N = int(entry_n.get())
-    min_age = int(entry_min_age.get())
-    min_experience_years = int(entry_min_experience.get())
+    try:
+        K = int(entry_k.get())
+        N = int(entry_n.get())
+        min_age = int(entry_min_age.get())
+        min_experience_years = int(entry_min_experience.get())
 
-    candidates = create_candidates(N)
-    result_jury = find_best_jury(candidates, K, min_age, min_experience_years)
+        candidates = create_candidates(N)
+        result_jury = find_best_jury(
+            candidates, K, min_age, min_experience_years)
 
-    if not result_jury:
-        result_label.config(text="Нет подходящего жюри по заданным условиям.")
-    else:
-        result_text = "\n".join([f"Номер кандидата: {member.number_candidate}, возраст: {member.age}, стаж: {member.experience_years}" for member in result_jury])
-        result_label.config(text=f"Лучшее жюри из {K} человек:\n{result_text}")
+        if not result_jury:
+            result_label.config(
+                text="Нет подходящего жюри по заданным условиям.")
+        else:
+            result_text = "\n".join(
+                [f"Номер кандидата: {member.number_candidate}, возраст: {member.age}, стаж: {member.experience_years}" for member in result_jury])
+            result_label.config(
+                text=f"Лучшее жюри из {K} человек:\n{result_text}")
+    except ValueError:
+        showerror("Ошибка",
+                  "Введенный символ не является числом. Перезапустите программу и введите число.")
+
 
 # Создание графического интерфейса
 root = Tk()
+w, h = root.winfo_width(), root.winfo_height()
+root.geometry(
+    f"+{(root.winfo_screenwidth()-w)//2}+{(root.winfo_screenheight()-h)//2}")
 root.title("Лабораторная работа №8")
 
 frame = Frame(root)
@@ -82,7 +101,8 @@ entry_n.grid(row=1, column=1)
 entry_min_age.grid(row=2, column=1)
 entry_min_experience.grid(row=3, column=1)
 
-result_button = ttk.Button(frame, text="Найти лучшее жюри", command=display_results)
+result_button = ttk.Button(
+    frame, text="Найти лучшее жюри", command=display_results)
 result_button.grid(row=4, column=0, columnspan=2)
 
 result_label = ttk.Label(frame, text="")
