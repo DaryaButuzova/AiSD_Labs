@@ -81,7 +81,7 @@ root = Tk()
 w, h = root.winfo_width(), root.winfo_height()
 root.geometry(
     f"+{(root.winfo_screenwidth()-w)//2}+{(root.winfo_screenheight()-h)//2}")
-root.title("Лабораторная работа №8")
+root.title("Поиск лучшего жюри")
 
 frame = Frame(root)
 frame.grid(row=0, column=0, padx=10, pady=10)
