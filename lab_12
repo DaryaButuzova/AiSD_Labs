@@ -1,35 +1,37 @@
 import numpy as np
-import scipy.linalg
+import random
+import math
+from decimal import Decimal
+
 
 def factorial(n):
     return 1 if n == 0 else n * factorial(n-1)
 
-def matrix_det(matrix):
-    return np.linalg.det(matrix)
 
-def alternating_sign(n):
+def alternating_sign(n):  # Функция для чередования
     return (-1) ** n
 
-def compute_series_sum(X0, t):
-    k = X0.shape[0]  # Ранг матрицы X0
-    X = matrix_det(X0)  # Определитель матрицы X0
+
+def compute_series_sum(X, t):
     result = 0.0
     n = 0
     term = 1.0
-
-    while np.abs(term) >= 10**(-t):
-        term = (X**(2*n-1)) / factorial(2*n-1)
-        result += alternating_sign(n) * term
+    while Decimal(str(result)).as_tuple().exponent*(-1) > t:
         n += 1
+        term = np.abs(X**(2*n-1)) / math.factorial(2*n-1)
+        result += alternating_sign(n) * term
 
     return round(result, t)
 
-# Пример использования
-np.random.seed(42)  # Для воспроизводимости результатов
-k = 3  # Ранг матрицы X0
+
+k = random.randint(0, 100)  # Ранг матрицы X0
 X0 = np.random.rand(k, k)  # Случайная матрица X0
-t = 6  # Точность вычислений
+print("Исходна матрица: ")
+print(X0)
+X = np.linalg.det(X0)  # Определитель матрицы X0
 
-result = compute_series_sum(X0, t)
+print("Определитель матрицы - X = ", X)
+# Точность вычислений
+t = int(input("Введите количество знаков после запятой "))
+result = compute_series_sum(X, t)
 print("Сумма знакопеременного ряда:", result)
-
