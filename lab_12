@@ -4,10 +4,6 @@ import math
 from decimal import Decimal
 
 
-def factorial(n):
-    return 1 if n == 0 else n * factorial(n-1)
-
-
 def alternating_sign(n):  # Функция для чередования
     return (-1) ** n
 
@@ -16,7 +12,7 @@ def compute_series_sum(X, t):
     result = 0.0
     n = 0
     term = 1.0
-    while Decimal(str(result)).as_tuple().exponent*(-1) > t:
+    while round(term, t) != 0:
         n += 1
         term = np.abs(X**(2*n-1)) / math.factorial(2*n-1)
         result += alternating_sign(n) * term
