@@ -1,1 +1,35 @@
+import numpy as np
+import scipy.linalg
+
+def factorial(n):
+    return 1 if n == 0 else n * factorial(n-1)
+
+def matrix_det(matrix):
+    return np.linalg.det(matrix)
+
+def alternating_sign(n):
+    return (-1) ** n
+
+def compute_series_sum(X0, t):
+    k = X0.shape[0]  # Ранг матрицы X0
+    X = matrix_det(X0)  # Определитель матрицы X0
+    result = 0.0
+    n = 0
+    term = 1.0
+
+    while np.abs(term) >= 10**(-t):
+        term = (X**(2*n-1)) / factorial(2*n-1)
+        result += alternating_sign(n) * term
+        n += 1
+
+    return round(result, t)
+
+# Пример использования
+np.random.seed(42)  # Для воспроизводимости результатов
+k = 3  # Ранг матрицы X0
+X0 = np.random.rand(k, k)  # Случайная матрица X0
+t = 6  # Точность вычислений
+
+result = compute_series_sum(X0, t)
+print("Сумма знакопеременного ряда:", result)
 
