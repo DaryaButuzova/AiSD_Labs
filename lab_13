@@ -1,38 +1,70 @@
 import csv
 
-# Открываем файл titanic.csv и читаем его с использованием модуля csv
-with open("/Users/darya/Documents/python/AiSD/titanic.csv", "r") as file:
-    reader = csv.reader(file)
-    header = next(reader)  # Пропускаем заголовок
+def read_csv(file):
+    # Чтение CSV файла и возвращение заголовка и данных
+    with open(file, 'r') as file:
+        reader = csv.reader(file)
+        header = next(reader)  # Читаем заголовок
+        data = [row for row in reader]
+    return header, data
 
-    # Индексы колонок в CSV файле
-    pclass_index = header.index('Pclass')
-    age_index = header.index('Age')
-    embarked_index = header.index('Embarked')
-    survived_index = header.index('Survived')
-
-    # Переменные для подсчета статистики
+def calculate_average_age(data, age_index):
+    # Вычисление среднего возраста из данных
+    total_age = 0
     total_passengers = 0
-    matching_passengers = 0
-    survived_count = 0
 
-    # Читаем каждую строку CSV файла
-    for row in reader:
-        total_passengers += 1
+    for row in data:
+        try:
+            age = float(row[age_index])
+            total_age += age
+            total_passengers += 1
+        except ValueError:
+            pass  # Пропускаем некорректные значения возраста
 
-        # Проверяем порт посадки, класс, возраст и выживание
-        if row[embarked_index] == 'Q':  # Порт Квинстаун
-            age = float(row[age_index]) if row[age_index] else None
+    if total_passengers == 0:
+        return None
+    else:
+        return total_age / total_passengers
 
-            # Определение возрастного интервала (возраст ± 5 лет)
-            if age is not None and 20 <= age <= 30:
-                matching_passengers += 1
+def find_passengers_in_age_range(data, average_age, age_range, embark_port, survived=True):
+    # Поиск пассажиров в заданном возрастном диапазоне и с определенным статусом выживания и портом посадки
+    count = 0
 
-                # Подсчет выживших
-                if row[survived_index] == '1':
-                    survived_count += 1
+    for row in data:
+        try:
+            age = float(row[age_index])
+            embark = row[embarked_index]
+            survival_status = int(row[survived_index])
 
-# Вывод результатов
-print(f"Всего пассажиров: {total_passengers}")
-print(f"Пассажиров в возрастном интервале 25 ± 5 лет, севших в порту Квинстаун: {matching_passengers}")
-print(f"Из них выжило: {survived_count}")
+            if (average_age - age_range <= age <= average_age + age_range) and \
+               (embark == embark_port) and \
+               (survival_status == 1 if survived else survival_status == 0):
+                count += 1
+                
+        except (ValueError, IndexError):
+            pass  # Пропускаем некорректные значения возраста или индекса
+
+    return count
+
+
+file = "/Users/darya/Documents/python/AiSD/titanic.csv" 
+header, data = read_csv(file)
+
+# Индексы колонок в CSV файле
+pclass_index = header.index('Pclass')
+age_index = header.index('Age')
+embarked_index = header.index('Embarked')
+survived_index = header.index('Survived')
+
+# Вычисляем средний возраст
+average_age = calculate_average_age(data, age_index)
+if average_age is not None:
+    print(f"Средний возраст всех пассажиров: {average_age:.2f} лет")
+
+    # Находим количество выживших пассажиров в порту Квинстауна в заданном возрастном интервале
+    embark_port = "Q"
+    age_range = 5
+    count_survived = find_passengers_in_age_range(data, average_age, age_range, embark_port)
+    print(f"Количество выживших пассажиров в порту {embark_port} в возрастном интервале {average_age:.0f} ±{age_range} лет: {count_survived}")
+else:
+    print("Невозможно вычислить средний возраст, так как нет корректных данных о возрасте.")
