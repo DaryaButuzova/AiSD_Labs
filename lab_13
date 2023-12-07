@@ -1,0 +1,38 @@
+import csv
+
+# Открываем файл titanic.csv и читаем его с использованием модуля csv
+with open("/Users/darya/Documents/python/AiSD/titanic.csv", "r") as file:
+    reader = csv.reader(file)
+    header = next(reader)  # Пропускаем заголовок
+
+    # Индексы колонок в CSV файле
+    pclass_index = header.index('Pclass')
+    age_index = header.index('Age')
+    embarked_index = header.index('Embarked')
+    survived_index = header.index('Survived')
+
+    # Переменные для подсчета статистики
+    total_passengers = 0
+    matching_passengers = 0
+    survived_count = 0
+
+    # Читаем каждую строку CSV файла
+    for row in reader:
+        total_passengers += 1
+
+        # Проверяем порт посадки, класс, возраст и выживание
+        if row[embarked_index] == 'Q':  # Порт Квинстаун
+            age = float(row[age_index]) if row[age_index] else None
+
+            # Определение возрастного интервала (возраст ± 5 лет)
+            if age is not None and 20 <= age <= 30:
+                matching_passengers += 1
+
+                # Подсчет выживших
+                if row[survived_index] == '1':
+                    survived_count += 1
+
+# Вывод результатов
+print(f"Всего пассажиров: {total_passengers}")
+print(f"Пассажиров в возрастном интервале 25 ± 5 лет, севших в порту Квинстаун: {matching_passengers}")
+print(f"Из них выжило: {survived_count}")
